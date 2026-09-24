@@ -20,4 +20,5 @@
     },
     "application": False,
     "installable": True,
+    "author" : 'ARA SOFT'
 }
