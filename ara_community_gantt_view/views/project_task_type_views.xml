@@ -1,0 +1,23 @@
+<odoo>
+    <record id="project_task_type_form_inherit_gantt_progress" model="ir.ui.view">
+        <field name="name">project.task.type.form.gantt.progress</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="stage_progress"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_type_tree_inherit_gantt_progress" model="ir.ui.view">
+        <field name="name">project.task.type.list.gantt.progress</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="stage_progress" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

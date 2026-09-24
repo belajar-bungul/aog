@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ARA Community Gantt View for Odoo Community. See tasks, progress, milestones, assignees, and project timelines in one clear view — no Odoo Enterprise required."
+    />
+    <title>ARA Community Gantt View for Odoo</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bs-body-font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+        --color-odoo: #714b67;
+        --color-odoo-hover: #5d3e55;
+        --color-odoo-dark: #3c2437;
+        --color-ink: #111827;
+        --color-lime: #d8ef68;
+        --color-bg-light: #fbfafc;
+      }
+
+      body {
+        background-color: var(--color-bg-light);
+        color: var(--color-ink);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Custom Styling & Fixes */
+      .text-dark-main {
+        color: #111827 !important;
+      }
+      
+      .text-muted-custom {
+        color: #4b5563 !important;
+      }
+
+      .hover-odoo:hover {
+        color: var(--color-odoo) !important;
+      }
+
+      code {
+        color: var(--color-odoo);
+        background-color: #f3eef2;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      footer code {
+        color: var(--color-lime);
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Custom Buttons */
+      .btn-odoo {
+        background-color: var(--color-odoo);
+        color: #ffffff !important;
+        border: none;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+      }
+      .btn-odoo:hover {
+        background-color: var(--color-odoo-hover);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+      }
+
+      .btn-dark-purple {
+        background-color: var(--color-odoo-dark);
+        color: #ffffff !important;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+      }
+      .btn-dark-purple:hover {
+        background-color: var(--color-odoo);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+      }
+
+      .badge-odoo {
+        background-color: var(--color-odoo);
+        color: #ffffff;
+      }
+
+      .text-odoo {
+        color: var(--color-odoo) !important;
+      }
+
+      .text-lime {
+        color: var(--color-lime) !important;
+      }
+
+      .bg-odoo {
+        background-color: var(--color-odoo) !important;
+      }
+
+      .bg-odoo-dark {
+        background-color: var(--color-odoo-dark) !important;
+      }
+
+      .bg-lime {
+        background-color: var(--color-lime) !important;
+      }
+
+      /* Typography Helpers */
+      .hero-heading {
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+      }
+
+      /* Feature Card */
+      .feature-card {
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.25s ease;
+      }
+      .feature-card:hover {
+        border-color: var(--color-odoo);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transform: translateY(-3px);
+      }
+
+      /* Image Accent Box */
+      .lime-accent-box {
+        position: relative;
+        z-index: 1;
+      }
+      .lime-accent-box::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
+        background-color: var(--color-lime);
+        border-radius: 20px;
+        z-index: -1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HEADER / NAVBAR -->
+    <nav class="navbar navbar-expand-md bg-transparent py-4">
+      <div class="container-xl">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#top">
+          <span class="badge badge-odoo p-2 rounded-3 text-xs">ARA</span>
+          <span class="fs-6 text-dark-main">Community Gantt View</span>
+        </a>
+        
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav mx-auto my-2 my-md-0 fw-semibold">
+            <li class="nav-item"><a class="nav-link text-dark-main hover-odoo px-3" href="#features">Features</a></li>
+            <li class="nav-item"><a class="nav-link text-dark-main hover-odoo px-3" href="#how-it-works">How it works</a></li>
+            <li class="nav-item"><a class="nav-link text-dark-main hover-odoo px-3" href="#install">Install</a></li>
+          </ul>
+          <a href="#install" class="btn btn-odoo rounded-2 text-sm shadow-sm">
+            Get started
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="top">
+      <!-- HERO SECTION -->
+      <section class="py-5 py-lg-6">
+        <div class="container-xl">
+          <div class="row align-items-center g-5">
+            <!-- Hero Text -->
+            <div class="col-lg-6">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="bg-lime d-inline-block rounded-pill" style="width: 28px; height: 4px;"></span>
+                <span class="text-odoo fw-bold text-uppercase fs-7 tracking-wider">
+                  100% Odoo Community &middot; No Enterprise Needed
+                </span>
+              </div>
+              <h1 class="hero-heading display-4 text-dark-main mb-4">
+                Make every project milestone easy to see.
+              </h1>
+              <p class="lead text-muted-custom mb-4 fs-5 fw-normal">
+                ARA Community Gantt View brings full Gantt chart functionality directly to <strong>Odoo Community Edition</strong> — eliminating the need for an expensive Odoo Enterprise upgrade. See tasks, owners, and progress in one clear view.
+              </p>
+              <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                <a href="#install" class="btn btn-odoo rounded-2 shadow-sm">
+                  Add it to Odoo Community
+                </a>
+                <a href="#features" class="btn btn-link text-odoo fw-bold text-decoration-none p-0 ms-2 fs-6">
+                  Explore features <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+              </div>
+              <p class="small text-muted-custom mb-0">
+                Built specifically for <strong>Odoo Community Edition</strong> &middot; Technical name: <code>ara_community_gantt_view</code>
+              </p>
+            </div>
+
+            <!-- Hero Gantt Preview Image -->
+            <div class="col-lg-6">
+              <div class="lime-accent-box">
+                <!-- GAMBAR DITAMBAHKAN DI SINI -->
+                <img 
+                  src="/example.png" 
+                  alt="ARA Community Gantt View Screenshot" 
+                  class="img-fluid rounded-4 shadow-lg border bg-white"
+                  style="border-color: #c4b5c1 !important;"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES SECTION -->
+      <section id="features" class="py-5 py-lg-6 bg-white border-top border-bottom">
+        <div class="container-xl">
+          <div class="row mb-5 align-items-end g-4">
+            <div class="col-lg-8">
+              <span class="text-odoo fw-bold text-uppercase fs-7 tracking-wider">Everything in one view</span>
+              <h2 class="fw-bold display-6 text-dark-main mt-2 mb-0">Less searching. More project control.</h2>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-muted-custom fs-6 mb-0">
+                Give your team a shared view of work, ownership, deadlines, and progress without leaving Odoo Community.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature Grid -->
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">01 / PROGRESS</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">Progress by stage</h3>
+                <p class="text-muted-custom small mb-0">
+                  Set a percentage on each task stage. Tasks use that value automatically, while Done tasks show 100%.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">02 / FILTERS</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">Find work quickly</h3>
+                <p class="text-muted-custom small mb-0">
+                  Filter by project, year, month, assignee, milestone, or custom date range.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">03 / STRUCTURE</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">Clear task hierarchy</h3>
+                <p class="text-muted-custom small mb-0">
+                  When viewing all projects, tasks are grouped by project. Parent tasks and subtasks stay easy to follow.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">04 / MILESTONES</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">Never miss a target</h3>
+                <p class="text-muted-custom small mb-0">
+                  Milestone deadlines appear as vertical markers on the timeline.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">05 / STATUS</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">Read progress at a glance</h3>
+                <p class="text-muted-custom small mb-0">
+                  White for 0%, yellow up to 75%, and green above 75% make project status easy to scan.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="feature-card">
+                <span class="text-odoo fw-bold fs-7">06 / NO ENTERPRISE NEEDED</span>
+                <h3 class="h5 fw-bold mt-3 text-dark-main">100% Odoo Community</h3>
+                <p class="text-muted-custom small mb-0">
+                  Unlock powerful Gantt timeline views built specifically for Odoo Community. Skip expensive Enterprise subscriptions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS SECTION -->
+      <section id="how-it-works" class="py-5 py-lg-6 text-white" style="background-color: #3c2437 !important;">
+        <div class="container-xl">
+          <div class="row mb-5 align-items-end g-4">
+            <div class="col-lg-8">
+              <span class="fw-bold text-uppercase fs-7 tracking-wider" style="color: #d8ef68 !important;">How it works</span>
+              <h2 class="fw-bold display-6 mt-2 mb-0 text-white">From setup to a clearer workday.</h2>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-white fs-6 mb-0">
+                A short setup gives your team a practical view of the work already stored in Odoo.
+              </p>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="border-top border-light pt-4">
+                <span class="fw-bold fs-7 tracking-wider" style="color: #d8ef68 !important;">STEP 01</span>
+                <h3 class="h4 fw-bold mt-3 text-white">Install the module</h3>
+                <p class="text-white small mb-0">
+                  Add <strong>ara_community_gantt_view</strong> to your addons path, update the Apps List, and install it.
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="border-top border-light pt-4">
+                <span class="fw-bold fs-7 tracking-wider" style="color: #d8ef68 !important;">STEP 02</span>
+                <h3 class="h4 fw-bold mt-3 text-white">Set stage progress</h3>
+                <p class="text-white small mb-0">
+                  Open Project &rarr; Configuration &rarr; Task Stages and set a Gantt Progress value for each stage.
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="border-top border-light pt-4">
+                <span class="fw-bold fs-7 tracking-wider" style="color: #d8ef68 !important;">STEP 03</span>
+                <h3 class="h4 fw-bold mt-3 text-white">Open your Gantt view</h3>
+                <p class="text-white small mb-0">
+                  Use the Gantt menu, apply filters, and click any bar to open the task form.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSTALL / CTA SECTION -->
+      <section id="install" class="py-5 py-lg-6 bg-lime">
+        <div class="container-xl">
+          <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
+            <div>
+              <span class="text-odoo fw-bold text-uppercase fs-7 tracking-wider">Ready to get started?</span>
+              <h2 class="fw-bold display-6 text-dark-main mt-2 mb-3">Enterprise Gantt features, zero subscription fees.</h2>
+              <p class="text-dark-main fw-medium mb-0 max-w-xl fs-6">
+                Get full Gantt chart functionality inside your Odoo Community Edition without paying for Odoo Enterprise.
+              </p>
+            </div>
+            <a href="#how-it-works" class="btn btn-dark-purple rounded-2 shadow-sm text-nowrap flex-shrink-0">
+              See how it works <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-4 bg-dark text-white border-top border-secondary small">
+      <div class="container-xl">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+          <span class="fw-bold text-white">ARA Community Gantt View</span>
+          <span class="text-white">Built for Odoo Community (No Enterprise Required) &middot; <code>ara_community_gantt_view</code></span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

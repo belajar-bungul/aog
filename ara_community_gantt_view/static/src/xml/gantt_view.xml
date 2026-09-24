@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ara_community_gantt_view.Controller">
+        <Layout display="props.display" className="'o_community_gantt_layout'">
+            <div class="o_community_gantt_toolbar">
+                <button class="o_community_gantt_filter_button" t-on-click="toggleFilters" t-att-aria-expanded="state.filtersOpen">
+                    <span class="fa fa-sliders"/> Filters
+                </button>
+                <span class="o_community_gantt_active_filter">
+                    <t t-esc="selectedProjectSummary.name"/> · <t t-esc="selectedProjectSummary.taskCount"/> tasks
+                </span>
+                <div class="o_community_gantt_filter_chips">
+                    <span t-if="!activeFilters.length" class="o_community_gantt_filter_chip o_community_gantt_filter_chip_muted">No filters</span>
+                    <t t-foreach="activeFilters" t-as="filter" t-key="filter">
+                        <span class="o_community_gantt_filter_chip" t-esc="filter"/>
+                    </t>
+                </div>
+                <span class="o_community_gantt_count"><t t-esc="visibleTasks.length"/> visible</span>
+            </div>
+            <div class="o_community_gantt_filter_panel" t-if="state.filtersOpen">
+                <label for="community-gantt-project">Project</label>
+                <select id="community-gantt-project" t-att-value="state.projectId" t-on-change="setProject">
+                    <option value="all">All projects</option>
+                    <t t-foreach="projects" t-as="project" t-key="project.id">
+                        <option t-att-value="project.id" t-esc="project.name"/>
+                    </t>
+                </select>
+                <label for="community-gantt-assignee">Assignee</label>
+                <select id="community-gantt-assignee" t-att-value="state.assigneeId" t-on-change="setAssignee">
+                    <option value="all">All assignees</option>
+                    <t t-foreach="assignees" t-as="assignee" t-key="assignee.id">
+                        <option t-att-value="assignee.id" t-esc="assignee.name"/>
+                    </t>
+                </select>
+                <label for="community-gantt-milestone">Milestone</label>
+                <select id="community-gantt-milestone" t-att-value="state.milestoneId" t-on-change="setMilestone">
+                    <option value="all">All milestones</option>
+                    <t t-foreach="milestones" t-as="milestone" t-key="milestone.id">
+                        <option t-att-value="milestone.id" t-esc="milestone.name"/>
+                    </t>
+                </select>
+                <label for="community-gantt-year">Year</label>
+                <select id="community-gantt-year" t-att-value="state.year" t-on-change="setYear">
+                    <option value="all">All years</option>
+                    <t t-foreach="years" t-as="year" t-key="year.id">
+                        <option t-att-value="year.id" t-esc="year.name"/>
+                    </t>
+                </select>
+                <label for="community-gantt-month">Month</label>
+                <select id="community-gantt-month" t-att-value="state.month" t-on-change="setMonth">
+                    <option value="all">All months</option>
+                    <t t-foreach="months" t-as="month" t-key="month.id">
+                        <option t-att-value="month.id" t-esc="month.name"/>
+                    </t>
+                </select>
+                <label for="community-gantt-date-from">From</label>
+                <input id="community-gantt-date-from" type="date" t-att-value="state.dateFrom" t-on-change="(event) => setDateRange('dateFrom', event)"/>
+                <label for="community-gantt-date-to">To</label>
+                <input id="community-gantt-date-to" type="date" t-att-value="state.dateTo" t-on-change="(event) => setDateRange('dateTo', event)"/>
+            </div>
+            <div class="o_community_gantt_summary">
+                <div class="o_community_gantt_summary_title">Project progress</div>
+                <div class="o_community_gantt_summary_value"><t t-esc="selectedProjectSummary.progress"/>%</div>
+                <div class="o_community_gantt_progress_track">
+                    <div class="o_community_gantt_progress_fill" t-att-style="`width: ${selectedProjectSummary.progress}%`"/>
+                </div>
+                <div class="o_community_gantt_summary_note">Average of <t t-esc="selectedProjectSummary.taskCount"/> tasks</div>
+            </div>
+            <Renderer
+                tasks="visibleTasks"
+                taskGroups="taskGroups"
+                showProjectGroups="state.projectId === 'all'"
+                timeline="timeline"
+                monthSegments="monthSegments"
+                rangeStart="rangeStart"
+                rangeDays="rangeDays"
+                milestones="visibleMilestones"
+                assigneeNames="assigneeNames"
+                openTask="openTask"
+            />
+        </Layout>
+    </t>
+
+    <t t-name="ara_community_gantt_view.Renderer">
+        <div class="o_community_gantt">
+            <div class="o_community_gantt_header">
+                <div class="o_community_gantt_task_header">Task</div>
+                <div class="o_community_gantt_column_header">Assignees</div>
+                <div class="o_community_gantt_column_header">Allocated</div>
+                <div class="o_community_gantt_months">
+                    <t t-foreach="props.monthSegments" t-as="month" t-key="month.id">
+                        <div class="o_community_gantt_month" t-att-style="`width: ${month.days * 30}px`" t-esc="month.label"/>
+                    </t>
+                </div>
+                <div class="o_community_gantt_days">
+                    <t t-foreach="props.timeline" t-as="day" t-key="day.date.toISOString()">
+                        <div t-att-class="day.weekend ? 'o_community_gantt_day weekend' : 'o_community_gantt_day'" t-esc="day.label"/>
+                    </t>
+                </div>
+                <div class="o_community_gantt_milestones">
+                    <t t-foreach="props.milestones" t-as="milestone" t-key="milestone.id">
+                        <div class="o_community_gantt_milestone" t-att-style="milestoneStyle(milestone)">
+                            <span class="fa fa-flag"/>
+                            <span t-esc="milestone.name"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+            <div class="o_community_gantt_body">
+                <t t-if="!props.tasks.length">
+                    <div class="o_community_gantt_empty">No tasks found for this filter.</div>
+                </t>
+                <t t-foreach="props.taskGroups" t-as="group" t-key="group.id">
+                    <div t-if="props.showProjectGroups" class="o_community_gantt_project_group">
+                        <span class="fa fa-folder-open-o"/>
+                        <span t-esc="group.name"/>
+                        <small><t t-esc="group.tasks.length"/> tasks</small>
+                    </div>
+                    <t t-foreach="group.tasks" t-as="task" t-key="task.id">
+                        <div class="o_community_gantt_row">
+                            <button t-att-class="'o_community_gantt_task ' + (task.parent_id ? 'o_community_gantt_child' : 'o_community_gantt_parent')" t-on-click="() => props.openTask(task)">
+                                <span t-if="task.parent_id" class="o_community_gantt_tree_marker">&gt;</span>
+                                <span t-esc="task.name"/>
+                                <small t-if="task.parent_id">Parent: <t t-esc="task.parent_id[1]"/></small>
+                            </button>
+                            <button class="o_community_gantt_assignees" t-att-title="taskAssignees(task)" t-on-click="() => props.openTask(task)">
+                                <span t-esc="taskAssignees(task)"/>
+                            </button>
+                            <button class="o_community_gantt_allocated" t-att-title="`${allocatedHours(task)} allocated`" t-on-click="() => props.openTask(task)">
+                                <span t-esc="allocatedHours(task)"/>
+                            </button>
+                            <div class="o_community_gantt_track">
+                                <t t-foreach="props.timeline" t-as="day" t-key="day.date.toISOString()">
+                                    <span t-att-class="day.weekend ? 'o_community_gantt_cell weekend' : 'o_community_gantt_cell'"/>
+                                </t>
+                                <button t-att-class="'o_community_gantt_bar ' + progressClass(task)" t-att-style="taskStyle(task)" t-att-title="taskTooltip(task)" t-att-aria-label="taskTooltip(task)" t-on-click="() => props.openTask(task)">
+                                    <span t-esc="taskProgress(task)"/>%
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
